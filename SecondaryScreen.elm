@@ -1,3 +1,4 @@
+port module SecondaryScreen exposing (Model, Msg, init, update, view)
 import Html exposing (..)
 import Html.App as App
 
@@ -8,21 +9,21 @@ type alias Model =
   , label : String
   }
 
-init : String -> String -> Model
+init : String -> String -> ( Model, Cmd Msg )
 init title label =
-  Model title label
+  (Model title label, Cmd.none)
 
 
 -- UPDATE
 type Msg
-  = Title String
-  | Label String
+  = Input String
 
-update : Msg -> Model -> Model
+port publish : String -> Cmd msg
+
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
-    Title str -> { model | title = str }
-    Label str -> { model | label = str }
+    Input str -> ( { model | title = str }, publish str )
 
 
 -- VIEW
@@ -33,10 +34,3 @@ view model =
     [ input [] []
     , text model.label
     ]
-
-
-main = App.beginnerProgram
-  { model = init "" "Sample"
-  , update = update
-  , view = view
-  }
